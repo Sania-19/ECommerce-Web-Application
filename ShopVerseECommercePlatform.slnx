@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Src/" />
+  <Folder Name="/Src/Api/">
+    <Project Path="ShopVerseECommercePlatform.Api/ShopVerseECommercePlatform.Api.csproj" />
+  </Folder>
+  <Folder Name="/Src/Core/">
+    <Project Path="ShopVerseECommercePlatform.Application/ShopVerseECommercePlatform.Application.csproj" />
+    <Project Path="ShopVerseECommercePlatform.Domain/ShopVerseECommercePlatform.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Src/External/">
+    <Project Path="ShopVerseECommercePlatform.Infrastructure/ShopVerseECommercePlatform.Infrastructure.csproj" />
+    <Project Path="ShopVerseECommercePlatform.Persistence/ShopVerseECommercePlatform.Persistence.csproj" />
+  </Folder>
+</Solution>
