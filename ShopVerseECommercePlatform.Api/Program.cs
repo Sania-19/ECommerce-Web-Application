@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.StaticFiles;
 using ShopVerseECommercePlatform.Api;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +10,14 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 //Adding Project Services
-builder.Services.AddApiService(builder.Configuration);
+builder.Services.AddApiService(builder.Configuration, builder.Environment);
 var app = builder.Build();
+
+var imagePath = Path.Combine(
+    app.Environment.WebRootPath,
+    "Files",
+    "019fc158-bbb2-70d0-bfc1-2a237849c27a.webp"
+);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -19,7 +26,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+var provider = new FileExtensionContentTypeProvider();
 
+provider.Mappings[".webp"] = "image/webp";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
+
+app.UseCors("ECommercePolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

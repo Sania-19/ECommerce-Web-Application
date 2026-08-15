@@ -18,22 +18,66 @@ namespace ShopVerseECommercePlatform.Persistence.Repository
             this.context = context;
         }
 
-        #region CREATE
-        public async Task<int> AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
             await context.AddAsync(entity);
-            var returnVal = await context.SaveChangesAsync();
-            return returnVal;
         }
 
-        public async Task<int> AddRangeAsync(IEnumerable<T> entities)
+        public async Task AddRangeAsync(IEnumerable<T> entities)
         {
             await context.AddRangeAsync(entities);
-            return await context.SaveChangesAsync();
         }
-        #endregion
 
-        #region READ
+        public async Task<int> CountAsync(Expression<Func<T, bool>> expression)
+        {
+            return await Task.Run(() => context.Set<T>().Count(expression));
+        }
+
+        public async Task DeleteAsync(T entity)
+        {
+            await Task.Run(() => context.Remove(entity));
+
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var entity = new T()
+            {
+                Id = id
+            };
+            await Task.Run(() => context.Remove(entity));
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<T> entities)
+        {
+            await Task.Run(() => context.RemoveRange(entities));
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<Guid> ids)
+        {
+            var models = new List<T>();
+            foreach (var id in ids)
+            {
+                var model = new T()
+                {
+                    Id = id
+                };
+                models.Add(model);
+            }
+            ;
+            await Task.Run(() => context.RemoveRange(models));
+        }
+
+        public async Task<IQueryable<T>> FindByAsync(Expression<Func<T, bool>> expression)
+        {
+            return await Task.Run(() => context.Set<T>().Where(expression));
+        }
+
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression)
+        {
+            return await Task.Run(() => context.Set<T>().FirstOrDefault(expression));
+        }
+
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await context.Set<T>().ToListAsync();
@@ -41,83 +85,28 @@ namespace ShopVerseECommercePlatform.Persistence.Repository
 
         public async Task<T> GetByIdAsync(Guid id)
         {
-            return  await context.Set<T>().FindAsync(id);
+            return await context.Set<T>().FindAsync(id);
         }
 
-        public async Task<T> FirstOrDefaultAsync(Expression <Func<T,bool>> expression)
-        {
-            return await context.Set<T>().FirstOrDefaultAsync(expression);
-        }
-        public async Task<T> LastOrDefaultAsync(Expression <Func<T,bool>> expression)
-        {
-            return await context.Set<T>().LastOrDefaultAsync(expression);
-        }
-        public async Task<IEnumerable<T>> FindByAsync(Expression<Func<T,bool>> expression)
-        {
-            return await context.Set<T>().Where(expression).ToListAsync();
-        }
-        public async Task<int> CountAsync(Expression<Func<T,bool>> expression)
-        {
-            return await context.Set<T>().CountAsync(expression);
-        }
-        public async Task<bool> IsExistAsync(Expression<Func<T,bool>> expression)
+        public async Task<bool> IsExistAsync(Expression<Func<T, bool>> expression)
         {
             return await context.Set<T>().AnyAsync(expression);
         }
-        #endregion
 
-        #region UPDATE
-        public async Task<int> UpdateAsync(T entity)
+        public async Task<T> LastOrDefaultAsync(Expression<Func<T, bool>> expression)
         {
-            context.Update(entity);
-            var returnVal = await context.SaveChangesAsync();
-            return returnVal;
+            return await Task.Run(() => context.Set<T>().LastOrDefault(expression));
         }
 
-        public async Task<int> UpdateRangeAsync(IEnumerable<T> entities)
+        public async Task UpdateAsync(T entity)
         {
-            context.UpdateRange(entities);
-            return await context.SaveChangesAsync();
-        }
-        #endregion
-
-        #region DELETE
-        //Delete using Entity
-        public async Task<int> DeleteAsync(T entity)
-        {
-            await Task.Run(() => context.Remove(entity));
-            var returnVal = await context.SaveChangesAsync();
-            return returnVal;
+            await Task.Run(() => context.Update(entity));
         }
 
-        //Delete using Primary Key (id)
-        public async Task<int> DeleteAsync(Guid id)
+        public async Task UpdateRangeAsync(IEnumerable<T> entities)
         {
-            var entity = new T() { Id = id };
-            context.Remove(entity);
-            return await context.SaveChangesAsync();
+            await Task.Run(() => context.UpdateRange(entities));
         }
-
-        public async Task<int> DeleteRangeAsync(IEnumerable<T> entities)
-        {
-            context.RemoveRange(entities);
-            return await context.SaveChangesAsync();
-        }
-
-        public async Task<int> DeleteRangeAsync(IEnumerable<Guid> ids)
-        {
-            List<T> entities = new List<T>();
-            foreach (var id in ids)
-            {
-                var entity = new T { Id = id };
-                entities.Add(entity);
-            }
-
-            context.RemoveRange(entities);
-            return await context.SaveChangesAsync();
-        }
-        #endregion
-
 
     }
 }
